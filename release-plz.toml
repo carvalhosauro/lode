@@ -1,0 +1,9 @@
+# release-plz — automates the "Release vX" PR (version bump + changelog) on pushes to
+# main. Lode ships a binary, so crates.io publishing is OFF; merging the release PR
+# tags the repo, and the tag triggers the binary build in `.github/workflows/release.yml`.
+[workspace]
+publish = false               # do not push crates to crates.io (Lode is an app)
+git_release_enable = true     # create the GitHub release on tag
+git_tag_enable = true
+changelog_update = true
+dependencies_update = false
