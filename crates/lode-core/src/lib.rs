@@ -8,5 +8,20 @@
 //! touches IO, the filesystem, or the terminal belongs in another crate.
 #![forbid(unsafe_code)]
 
+pub mod event;
+pub mod ids;
+pub mod insight;
+pub mod stream;
+pub mod template;
+
+pub use event::{LogEvent, Provenance, Severity};
+pub use ids::{
+    EventId, Fingerprint, IndexTime, RowAnchor, SegmentId, SegmentPosition, SourceOffset, StreamId,
+    TemplateId, Timestamp,
+};
+pub use insight::{Confidence, Insight, InsightKind};
+pub use stream::{LogStream, SourceType, StreamMode};
+pub use template::{Template, TemplateState};
+
 /// Crate version, surfaced by the CLI.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
