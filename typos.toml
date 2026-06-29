@@ -1,0 +1,8 @@
+# typos-cli configuration. Run: `typos`
+[default.extend-words]
+# domain terms that look like typos but aren't
+lode = "lode"
+journald = "journald"
+
+[files]
+extend-exclude = ["spike/", "CHANGELOG.md"]
