@@ -1,0 +1,16 @@
+[package]
+name = "lode-storage"
+description = "Lode storage & indexing: append-only segments and on-disk indexes (RFC-0002)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+lode-core = { workspace = true }
+# intended (added when RFC-0002 is implemented): memmap2 for mmap segment reads.

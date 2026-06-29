@@ -1,0 +1,50 @@
+# Lode — Cargo workspace.
+# Layering rule (RFC-driven): `lode-core` is pure and dependency-free; everything that
+# touches IO, parsing, or the terminal lives in a separate crate that MAY take deps.
+[workspace]
+resolver = "2"
+members = ["crates/*"]
+exclude = ["spike"]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.85"
+authors = ["carvalhosauro"]
+license = "MIT"
+repository = "https://github.com/carvalhosauro/lode"
+homepage = "https://github.com/carvalhosauro/lode"
+description = "Local-first log investigation engine: template mining, insights, and structured query in one binary."
+keywords = ["logs", "log-analysis", "tui", "observability", "drain"]
+categories = ["command-line-utilities", "development-tools"]
+
+[workspace.dependencies]
+# internal
+lode-core = { path = "crates/lode-core", version = "0.0.0" }
+lode-storage = { path = "crates/lode-storage", version = "0.0.0" }
+lode-parse = { path = "crates/lode-parse", version = "0.0.0" }
+lode-source = { path = "crates/lode-source", version = "0.0.0" }
+lode-tui = { path = "crates/lode-tui", version = "0.0.0" }
+# external (declared centrally; pulled in by non-core crates as features land)
+clap = { version = "4", features = ["derive"] }
+regex = "1"
+
+# Project-wide lints. `unsafe_code = "deny"` is overridable per-crate (e.g. lode-storage
+# for mmap); lode-core additionally `#![forbid(unsafe_code)]` which cannot be turned off.
+[workspace.lints.rust]
+unsafe_code = "deny"
+unreachable_pub = "warn"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+# NOTE: panic defaults to "unwind" and MUST stay unwind — the runtime (RFC-0012)
+# isolates worker panics at the task/thread boundary (catch_unwind / JoinHandle).
+# Do not set panic = "abort".

@@ -1,0 +1,16 @@
+[package]
+name = "lode-tui"
+description = "Lode terminal UI: virtualized viewport, fuzzy navigation, multi-panel layout (RFC-0008)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+lode-core = { workspace = true }
+# intended (RFC-0008): ratatui + crossterm for rendering.

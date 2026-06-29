@@ -1,0 +1,16 @@
+[package]
+name = "lode-source"
+description = "Lode source adapters: file, stdin, docker, journald ingestion (RFC-0001)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+lode-core = { workspace = true }
+# intended (RFC-0001): async IO and per-source adapter deps as adapters land.

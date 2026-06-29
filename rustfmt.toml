@@ -1,0 +1,6 @@
+# Stable-only rustfmt options (nightly options are omitted so `cargo fmt --check`
+# stays clean on the pinned stable toolchain).
+max_width = 100
+tab_spaces = 4
+newline_style = "Unix"
+use_small_heuristics = "Default"

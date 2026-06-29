@@ -1,0 +1,37 @@
+# git-cliff configuration — generates CHANGELOG.md from Conventional Commits.
+[changelog]
+header = """
+# Changelog
+
+All notable changes to Lode are documented here.
+This project adheres to [Keep a Changelog](https://keepachangelog.com/) and
+[Semantic Versioning](https://semver.org/).\n
+"""
+body = """
+{% if version %}## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}## [Unreleased]
+{% endif %}
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | upper_first }}
+{% for commit in commits %}- {{ commit.message | upper_first }}{% endfor %}
+{% endfor %}\n
+"""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+commit_parsers = [
+    { message = "^feat", group = "Features" },
+    { message = "^fix", group = "Bug Fixes" },
+    { message = "^perf", group = "Performance" },
+    { message = "^refactor", group = "Refactor" },
+    { message = "^docs", group = "Documentation" },
+    { message = "^test", group = "Testing" },
+    { message = "^(build|ci)", group = "Build & CI" },
+    { message = "^chore", skip = true },
+    { message = "^style", skip = true },
+]
+protect_breaking_commits = true
+tag_pattern = "v[0-9]*"
+sort_commits = "oldest"

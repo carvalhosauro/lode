@@ -1,0 +1,20 @@
+[package]
+name = "lode-cli"
+description = "Lode CLI — the `lode` binary (RFC-0016)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "lode"
+path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+lode-core = { workspace = true }
+clap = { workspace = true }

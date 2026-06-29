@@ -1,0 +1,17 @@
+[package]
+name = "lode-parse"
+description = "Lode parsing & masking: tokenization and the typed-variable masking dictionary (RFC-0003 / RFC-0017)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+lode-core = { workspace = true }
+# intended (when masking lands): regex for the rich/custom mask dictionary.
+# Hot-path common masks (NUM/IP/UUID/HEX) stay char-class fast-paths — see spike/.
