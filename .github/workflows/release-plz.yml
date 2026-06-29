@@ -1,0 +1,30 @@
+name: release-plz
+
+# Opens/updates a "Release vX" PR on every push to main: bumps the version and updates
+# CHANGELOG.md from Conventional Commits. Merging that PR tags the repo, which triggers
+# release.yml to build and attach the binaries. No crates.io publish (Lode is an app).
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-plz
+  cancel-in-progress: false
+
+jobs:
+  release-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: release-plz/action@v0.5
+        with:
+          command: release-pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
