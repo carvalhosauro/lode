@@ -1,0 +1,22 @@
+# Rust build output
+/target
+**/target/
+
+# cargo-dist / release artifacts
+/dist/
+
+# Throwaway spike compiled binaries (source is kept)
+spike/rust/mining_spike
+spike/rust/mining_spike_opt
+spike/rust/mining_spike_mt
+spike/**/mining_spike*
+!spike/**/*.rs
+!spike/**/*.swift
+
+# Editor / OS
+.DS_Store
+*.swp
+*~
+.idea/
+
+# Note: Cargo.lock IS committed (Lode ships a binary, not a library).
