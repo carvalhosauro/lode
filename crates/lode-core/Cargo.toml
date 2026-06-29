@@ -1,0 +1,16 @@
+[package]
+name = "lode-core"
+description = "Lode core: pure, dependency-free domain types and algorithms (mining, index, query, insight)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+# lode-core takes NO external dependencies — only `std`. This emptiness is a hard
+# invariant, enforced by the `core-no-deps` CI job. Do not add entries here.
+[dependencies]
