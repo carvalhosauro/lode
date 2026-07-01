@@ -469,10 +469,12 @@ assert_eq!(run1.assignments, run2.assignments);
 
 | Piece | Where | Deps |
 |-------|-------|------|
-| `Corpus`, `pa()`, `template_set_hash()` | `lode-core/src/corpus/` | std |
+| `CorpusInput`, `run_corpus`, `pa()`, `template_set_hash` | `lode-core/src/corpus/` | std |
+| Fixture loader (`load_corpus`) | `lode-parse/tests/corpus_loader.rs` | serde, toml (dev) |
 | Fixtures | `fixtures/corpus/` | — |
-| Integration tests | `lode-core/tests/corpus.rs` | std |
-| `corpus_pa` gate test | `#[ignore]` until T1.4 | std |
+| Fixture load test | `lode-parse/tests/corpus.rs` | dev |
+| `corpus_pa` gate test | `#[ignore]` until T1.4 | dev |
+| `StubMiner` | `lode-core` — smoke only; one unit test that it returns `""` | std |
 | Criterion throughput | `crates/lode-bench/` | T1.4 |
 
 ### `CorpusMiner` trait (harness seam)
@@ -483,7 +485,8 @@ pub trait CorpusMiner {
 }
 ```
 
-T0.3 ships a **stub** miner (empty/wrong patterns) — harness runs, determinism holds on stub, PA test ignored. T1.4 wires real `DrainMiner`.
+`StubMiner` remains for wiring smoke outside quality gates. **No corpus integration test uses it.**
+T1.4 wires `DrainMiner` and un-ignores the PA gate.
 
 ---
 
@@ -504,10 +507,9 @@ T0.3 ships a **stub** miner (empty/wrong patterns) — harness runs, determinism
 - [x] Unit tests for fingerprint + `MiningParams::default` + spike hash parity
 
 ### T0.3 — Golden corpus
-- [ ] `fixtures/corpus/` — 3 handcrafted formats
-- [ ] `lode-core/src/corpus/` harness
-- [ ] `corpus_determinism` test (stub miner)
-- [ ] `corpus_pa` test `#[ignore]`
+- [x] `fixtures/corpus/` — 3 handcrafted formats (55 lines each, 165 total)
+- [x] `lode-core/src/corpus/` harness
+- [x] `corpus_pa` test `#[ignore]` until T1.4 (loader in `lode-parse` tests)
 
 ---
 
