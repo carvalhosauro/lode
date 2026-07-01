@@ -2,7 +2,7 @@
 
 use crate::hash::Fnv1a64;
 use crate::ids::Fingerprint;
-use crate::mining::{hash_masked_tokens, Token};
+use crate::mining::{Token, hash_masked_tokens};
 
 impl Fingerprint {
     /// Stable identifier over a masked token sequence (RFC-0003 §5.4).

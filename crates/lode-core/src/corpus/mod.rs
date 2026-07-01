@@ -69,7 +69,10 @@ pub struct CorpusResult {
 /// # Errors
 ///
 /// Returns [`CorpusError`] when a label references an unknown template id.
-pub fn run_corpus(input: &CorpusInput, miner: &mut impl CorpusMiner) -> Result<CorpusResult, CorpusError> {
+pub fn run_corpus(
+    input: &CorpusInput,
+    miner: &mut impl CorpusMiner,
+) -> Result<CorpusResult, CorpusError> {
     let mut assignments = Vec::new();
     let mut mined_patterns = BTreeMap::<String, BTreeSet<String>>::new();
     let mut expected_patterns = BTreeMap::<String, BTreeSet<String>>::new();
@@ -82,17 +85,19 @@ pub fn run_corpus(input: &CorpusInput, miner: &mut impl CorpusMiner) -> Result<C
 
         for (idx, raw) in format.lines.iter().enumerate() {
             let line_no = idx + 1;
-            let label = format.labels.get(&line_no).ok_or_else(|| CorpusError::MissingLabel {
-                format: format_id.clone(),
-                line: line_no,
-            })?;
-            let expected = format
-                .templates
-                .get(&label.template_gid)
-                .ok_or_else(|| CorpusError::UnknownTemplateGid {
+            let label = format
+                .labels
+                .get(&line_no)
+                .ok_or_else(|| CorpusError::MissingLabel {
+                    format: format_id.clone(),
+                    line: line_no,
+                })?;
+            let expected = format.templates.get(&label.template_gid).ok_or_else(|| {
+                CorpusError::UnknownTemplateGid {
                     format: format_id.clone(),
                     gid: label.template_gid.clone(),
-                })?;
+                }
+            })?;
 
             let mined_pattern = miner.mine_line(raw);
             if patterns_match(expected, &mined_pattern) {
@@ -193,7 +198,10 @@ pub fn pa_ratio(correct: usize, total: usize) -> f64 {
 /// # Errors
 ///
 /// Returns [`CorpusError::DeterminismMismatch`] when the two runs diverge.
-pub fn assert_deterministic<F, M>(input: &CorpusInput, mut miner_factory: F) -> Result<(), CorpusError>
+pub fn assert_deterministic<F, M>(
+    input: &CorpusInput,
+    mut miner_factory: F,
+) -> Result<(), CorpusError>
 where
     F: FnMut() -> M,
     M: CorpusMiner,

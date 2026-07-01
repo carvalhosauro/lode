@@ -1,8 +1,8 @@
 //! Golden corpus integration tests — fixture loading via serde/toml (T0.3).
 
-mod corpus_loader;
+mod common;
 
-use corpus_loader::{corpus_root, load_corpus};
+use common::corpus_loader::{corpus_root, load_corpus};
 
 #[test]
 fn corpus_fixtures_load() {

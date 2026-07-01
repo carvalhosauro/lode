@@ -35,12 +35,16 @@ struct LabelRow {
 /// # Panics
 ///
 /// Panics if fixture files are missing, malformed, or internally inconsistent.
-pub fn load_corpus(root: impl AsRef<Path>) -> CorpusInput {
+pub(crate) fn load_corpus(root: impl AsRef<Path>) -> CorpusInput {
     load_corpus_result(root).expect("golden corpus fixtures must load")
 }
 
 /// Fallible loader for explicit error messages in tests.
-pub fn load_corpus_result(root: impl AsRef<Path>) -> Result<CorpusInput, String> {
+///
+/// # Errors
+///
+/// Returns a formatted error string when fixture files are missing, malformed, or inconsistent.
+pub(crate) fn load_corpus_result(root: impl AsRef<Path>) -> Result<CorpusInput, String> {
     let root = root.as_ref();
     let manifest_path = root.join("manifest.toml");
     let manifest_text = fs::read_to_string(&manifest_path)
@@ -72,9 +76,8 @@ fn load_format(root: &Path, entry: &ManifestFormat) -> Result<FormatInput, Strin
         if row.trim().is_empty() {
             continue;
         }
-        let label: LabelRow = serde_json::from_str(row).map_err(|e| {
-            format!("parse {} line {}: {e}", labels_path.display(), idx + 1)
-        })?;
+        let label: LabelRow = serde_json::from_str(row)
+            .map_err(|e| format!("parse {} line {}: {e}", labels_path.display(), idx + 1))?;
         labels.insert(
             label.line,
             LineLabel {
@@ -130,6 +133,6 @@ fn load_format(root: &Path, entry: &ManifestFormat) -> Result<FormatInput, Strin
 
 /// Workspace-relative corpus root from `CARGO_MANIFEST_DIR` of `lode-parse`.
 #[must_use]
-pub fn corpus_root() -> PathBuf {
+pub(crate) fn corpus_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/corpus")
 }

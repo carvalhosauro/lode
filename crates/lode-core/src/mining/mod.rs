@@ -170,11 +170,7 @@ mod tests {
 
     #[test]
     fn fingerprint_is_deterministic() {
-        let tokens = vec![
-            Token::new("GET"),
-            Token::new("<PATH>"),
-            Token::new("<NUM>"),
-        ];
+        let tokens = vec![Token::new("GET"), Token::new("<PATH>"), Token::new("<NUM>")];
         let a = Fingerprint::from_masked_tokens(&tokens);
         let b = Fingerprint::from_masked_tokens(&tokens);
         assert_eq!(a, b);

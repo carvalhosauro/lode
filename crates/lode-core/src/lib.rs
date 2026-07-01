@@ -20,18 +20,16 @@ pub mod template;
 
 pub use attributes::Attributes;
 pub use corpus::{
-    assert_deterministic, patterns_match, pa_ratio, run_corpus, CorpusError, CorpusInput,
-    CorpusMiner, CorpusResult, FormatInput, FormatSpec, LineAssignment, LineLabel, StubMiner,
+    CorpusError, CorpusInput, CorpusMiner, CorpusResult, FormatInput, FormatSpec, LineAssignment,
+    LineLabel, StubMiner, assert_deterministic, pa_ratio, patterns_match, run_corpus,
 };
-pub use event::{LogEvent, Provenance, Severity, MAX_RAW_LINE_BYTES};
-pub use mining::{
-    template_set_hash, MaskKind, MaskedTokens, MiningParams, Token,
-};
+pub use event::{LogEvent, MAX_RAW_LINE_BYTES, Provenance, Severity};
 pub use ids::{
     EventId, Fingerprint, IndexTime, RowAnchor, SegmentId, SegmentPosition, SourceOffset, StreamId,
     TemplateId, Timestamp,
 };
 pub use insight::{Confidence, Insight, InsightKind};
+pub use mining::{MaskKind, MaskedTokens, MiningParams, Token, template_set_hash};
 pub use stream::{LogStream, SourceType, StreamMode};
 pub use template::{Template, TemplateState};
 
