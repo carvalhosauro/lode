@@ -8,13 +8,20 @@
 //! touches IO, the filesystem, or the terminal belongs in another crate.
 #![forbid(unsafe_code)]
 
+pub mod attributes;
 pub mod event;
+pub mod hash;
 pub mod ids;
 pub mod insight;
+pub mod mining;
 pub mod stream;
 pub mod template;
 
-pub use event::{LogEvent, Provenance, Severity};
+pub use attributes::Attributes;
+pub use event::{LogEvent, Provenance, Severity, MAX_RAW_LINE_BYTES};
+pub use mining::{
+    template_set_hash, MaskKind, MaskedTokens, MiningParams, Token,
+};
 pub use ids::{
     EventId, Fingerprint, IndexTime, RowAnchor, SegmentId, SegmentPosition, SourceOffset, StreamId,
     TemplateId, Timestamp,
