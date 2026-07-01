@@ -9,6 +9,7 @@
 #![forbid(unsafe_code)]
 
 pub mod attributes;
+pub mod corpus;
 pub mod event;
 pub mod hash;
 pub mod ids;
@@ -18,6 +19,10 @@ pub mod stream;
 pub mod template;
 
 pub use attributes::Attributes;
+pub use corpus::{
+    assert_deterministic, patterns_match, pa_ratio, run_corpus, CorpusError, CorpusInput,
+    CorpusMiner, CorpusResult, FormatInput, FormatSpec, LineAssignment, LineLabel, StubMiner,
+};
 pub use event::{LogEvent, Provenance, Severity, MAX_RAW_LINE_BYTES};
 pub use mining::{
     template_set_hash, MaskKind, MaskedTokens, MiningParams, Token,
