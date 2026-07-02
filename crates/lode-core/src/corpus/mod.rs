@@ -81,6 +81,7 @@ pub fn run_corpus(
 
     for format in &input.formats {
         let format_id = &format.spec.id;
+        miner.begin_format(format_id);
         let mut correct = 0usize;
 
         for (idx, raw) in format.lines.iter().enumerate() {
