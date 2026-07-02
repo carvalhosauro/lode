@@ -4,9 +4,11 @@
 
 pub mod error;
 pub mod mask;
+pub mod miner;
 pub mod tokenize;
 
 pub use error::ParseError;
 pub use lode_core::pattern_to_string;
 pub use mask::{mask, tokenize_and_mask};
+pub use miner::DrainMiner;
 pub use tokenize::tokenize;
