@@ -3,7 +3,10 @@
 //! for rich/custom masks; common masks stay char-class fast-paths (see `spike/`).
 
 pub mod error;
+pub mod mask;
 pub mod tokenize;
 
 pub use error::ParseError;
+pub use lode_core::pattern_to_string;
+pub use mask::{mask, tokenize_and_mask};
 pub use tokenize::tokenize;
