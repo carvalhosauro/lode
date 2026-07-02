@@ -147,7 +147,7 @@ impl DrainState {
 
         let entry = &self.registry.entries[template_id.0 as usize];
         let pattern = entry.template.pattern.to_string();
-        let fingerprint = Fingerprint::from_masked_tokens(&entry.tokens);
+        let fingerprint = Fingerprint::from_masked_tokens(&masked.tokens);
 
         ProcessResult {
             template_id: Some(template_id),
@@ -272,6 +272,21 @@ mod tests {
             Token::new("<NUM>"),
         ];
         assert!((sequence_similarity(&pattern, &masked) - 1.0).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn fingerprint_uses_event_masked_tokens_after_widen() {
+        let mut state = DrainState::new(MiningParams {
+            depth: 4,
+            ..Default::default()
+        });
+        let a = masked_tokens("A B C D foo");
+        let b = masked_tokens("A B C D bar");
+        state.process(&a);
+        let result = state.process(&b);
+        let expected = Fingerprint::from_masked_tokens(&b.tokens);
+        assert_eq!(result.fingerprint, expected);
+        assert_ne!(result.fingerprint, Fingerprint::from_masked_tokens(&a.tokens));
     }
 
     #[test]
