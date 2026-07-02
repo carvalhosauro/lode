@@ -3,6 +3,8 @@
 mod common;
 
 use common::corpus_loader::{corpus_root, load_corpus};
+use lode_core::{assert_deterministic, run_corpus};
+use lode_parse::DrainMiner;
 
 #[test]
 fn corpus_fixtures_load() {
@@ -17,14 +19,18 @@ fn corpus_fixtures_load() {
 }
 
 #[test]
-#[ignore = "gate T1.4: requires DrainMiner — only real mining may assert PA floor"]
 fn corpus_pa_meets_floor() {
     let input = load_corpus(corpus_root());
-    // TODO(T1.4): let mut miner = DrainMiner::default();
-    // let result = run_corpus(&input, &mut miner).expect("evaluate");
-    // for format in &input.formats {
-    //     let pa = result.per_format_pa[&format.spec.id];
-    //     assert!(pa >= format.spec.pa_floor, "{}", format.spec.id);
-    // }
-    let _ = input;
+    let mut miner = DrainMiner::new();
+    let result = run_corpus(&input, &mut miner).expect("evaluate");
+    for format in &input.formats {
+        let pa = result.per_format_pa[&format.spec.id];
+        assert!(pa >= format.spec.pa_floor, "{}: pa={pa}", format.spec.id);
+    }
+}
+
+#[test]
+fn corpus_mining_is_deterministic() {
+    let input = load_corpus(corpus_root());
+    assert_deterministic(&input, DrainMiner::new).expect("deterministic");
 }

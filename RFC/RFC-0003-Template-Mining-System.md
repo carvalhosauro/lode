@@ -298,6 +298,8 @@ flowchart TB
 - **Leaf** holds a bounded bucket of candidate Templates. Selection picks the candidate with highest **sequence similarity** `simSeq = (matching positions) / length`; a match requires `simSeq ≥ st` (default 0.5). No candidate clears the bar → a new Template is created in that leaf.
 - **Update on match** is **widen-only** (see 6.4): differing constant positions become `<*>`. Routing-position tokens never widen (they are the tree structure).
 
+> **Note:** Combined log formats (e.g. nginx `IP - - [ts] "METHOD …"`) may require `d > 4` so the HTTP method token falls within the routing prefix. Default remains `4`; per-stream override is valid (§11).
+
 ## 6.3 Template Lifecycle
 
 ```mermaid
