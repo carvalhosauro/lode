@@ -30,7 +30,8 @@ pub use ids::{
 };
 pub use insight::{Confidence, Insight, InsightKind};
 pub use mining::{
-    MaskKind, MaskedTokens, MiningParams, Token, pattern_to_string, template_set_hash,
+    DrainState, MaskKind, MaskedTokens, MiningParams, ProcessResult, Token, pattern_to_string,
+    template_set_hash,
 };
 pub use stream::{LogStream, SourceType, StreamMode};
 pub use template::{Template, TemplateState};
