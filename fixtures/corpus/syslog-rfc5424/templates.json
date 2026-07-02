@@ -1,0 +1,6 @@
+{
+  "syslog-user-login": "<NUM>1 <TS> host01 myapp - - - User login successful for user <NUM>",
+  "syslog-connection-refused": "<NUM>1 <TS> host01 myapp - - - Connection refused to <IP>:<NUM>",
+  "syslog-disk-warning": "<NUM>1 <TS> host01 myapp - - - Disk usage above <NUM> percent on <PATH>",
+  "syslog-shutdown": "<NUM>1 <TS> host01 myapp - - - Graceful shutdown initiated"
+}

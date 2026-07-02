@@ -1,0 +1,6 @@
+{
+  "json-info-login": "{ \"level\" : \"info\" , \"msg\" : \"user login\" , \"user_id\" : <NUM> }",
+  "json-warn-cache": "{ \"level\" : \"warn\" , \"msg\" : \"cache miss\" , \"key\" : \"<HEX>\" }",
+  "json-error-db": "{ \"level\" : \"error\" , \"msg\" : \"db connection failed\" , \"duration_ms\" : <NUM> , \"request_id\" : \"<UUID>\" }",
+  "json-notice-start": "{ \"level\" : \"notice\" , \"msg\" : \"service started\" , \"port\" : <NUM> }"
+}

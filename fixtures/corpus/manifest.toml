@@ -1,0 +1,22 @@
+# Golden corpus manifest (T0.3 handcrafted fixtures)
+
+[[format]]
+id = "nginx-access"
+path = "nginx-access"
+lines = 55
+source_type = "file"
+pa_floor = 0.90
+
+[[format]]
+id = "syslog-rfc5424"
+path = "syslog-rfc5424"
+lines = 55
+source_type = "file"
+pa_floor = 0.90
+
+[[format]]
+id = "json-lines"
+path = "json-lines"
+lines = 55
+source_type = "file"
+pa_floor = 0.90

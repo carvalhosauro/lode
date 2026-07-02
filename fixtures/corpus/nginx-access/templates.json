@@ -1,0 +1,6 @@
+{
+  "nginx-get-2xx": "<IP> - - <TS> \"GET <PATH> HTTP/1.1\" <NUM> <NUM>",
+  "nginx-post-4xx": "<IP> - - <TS> \"POST <PATH> HTTP/1.1\" <NUM> <NUM>",
+  "nginx-delete-2xx": "<IP> - - <TS> \"DELETE <PATH> HTTP/1.1\" <NUM> <NUM>",
+  "nginx-get-404": "<IP> - - <TS> \"GET <PATH> HTTP/1.1\" <NUM> <NUM>"
+}

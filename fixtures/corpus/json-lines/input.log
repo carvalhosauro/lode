@@ -1,0 +1,55 @@
+{ "level" : "info" , "msg" : "user login" , "user_id" : 100 }
+{ "level" : "warn" , "msg" : "cache miss" , "key" : "deadbeefcafebabe" }
+{ "level" : "error" , "msg" : "db connection failed" , "duration_ms" : 3002 , "request_id" : "7c9e6679-7425-40de-944b-e07fc1f90ae7" }
+{ "level" : "notice" , "msg" : "service started" , "port" : 8083 }
+{ "level" : "info" , "msg" : "user login" , "user_id" : 104 }
+{ "level" : "warn" , "msg" : "cache miss" , "key" : "0123456789abcdef" }
+{ "level" : "error" , "msg" : "db connection failed" , "duration_ms" : 3006 , "request_id" : "550e8400-e29b-41d4-a716-446655440000" }
+{ "level" : "notice" , "msg" : "service started" , "port" : 8087 }
+{ "level" : "info" , "msg" : "user login" , "user_id" : 108 }
+{ "level" : "warn" , "msg" : "cache miss" , "key" : "a1b2c3d4e5f6a7b8" }
+{ "level" : "error" , "msg" : "db connection failed" , "duration_ms" : 3010 , "request_id" : "6ba7b810-9dad-11d1-80b4-00c04fd430c8" }
+{ "level" : "notice" , "msg" : "service started" , "port" : 8091 }
+{ "level" : "info" , "msg" : "user login" , "user_id" : 112 }
+{ "level" : "warn" , "msg" : "cache miss" , "key" : "deadbeefcafebabe" }
+{ "level" : "error" , "msg" : "db connection failed" , "duration_ms" : 3014 , "request_id" : "7c9e6679-7425-40de-944b-e07fc1f90ae7" }
+{ "level" : "notice" , "msg" : "service started" , "port" : 8095 }
+{ "level" : "info" , "msg" : "user login" , "user_id" : 116 }
+{ "level" : "warn" , "msg" : "cache miss" , "key" : "0123456789abcdef" }
+{ "level" : "error" , "msg" : "db connection failed" , "duration_ms" : 3018 , "request_id" : "550e8400-e29b-41d4-a716-446655440000" }
+{ "level" : "notice" , "msg" : "service started" , "port" : 8099 }
+{ "level" : "info" , "msg" : "user login" , "user_id" : 120 }
+{ "level" : "warn" , "msg" : "cache miss" , "key" : "a1b2c3d4e5f6a7b8" }
+{ "level" : "error" , "msg" : "db connection failed" , "duration_ms" : 3022 , "request_id" : "6ba7b810-9dad-11d1-80b4-00c04fd430c8" }
+{ "level" : "notice" , "msg" : "service started" , "port" : 8103 }
+{ "level" : "info" , "msg" : "user login" , "user_id" : 124 }
+{ "level" : "warn" , "msg" : "cache miss" , "key" : "deadbeefcafebabe" }
+{ "level" : "error" , "msg" : "db connection failed" , "duration_ms" : 3026 , "request_id" : "7c9e6679-7425-40de-944b-e07fc1f90ae7" }
+{ "level" : "notice" , "msg" : "service started" , "port" : 8107 }
+{ "level" : "info" , "msg" : "user login" , "user_id" : 128 }
+{ "level" : "warn" , "msg" : "cache miss" , "key" : "0123456789abcdef" }
+{ "level" : "error" , "msg" : "db connection failed" , "duration_ms" : 3030 , "request_id" : "550e8400-e29b-41d4-a716-446655440000" }
+{ "level" : "notice" , "msg" : "service started" , "port" : 8111 }
+{ "level" : "info" , "msg" : "user login" , "user_id" : 132 }
+{ "level" : "warn" , "msg" : "cache miss" , "key" : "a1b2c3d4e5f6a7b8" }
+{ "level" : "error" , "msg" : "db connection failed" , "duration_ms" : 3034 , "request_id" : "6ba7b810-9dad-11d1-80b4-00c04fd430c8" }
+{ "level" : "notice" , "msg" : "service started" , "port" : 8115 }
+{ "level" : "info" , "msg" : "user login" , "user_id" : 136 }
+{ "level" : "warn" , "msg" : "cache miss" , "key" : "deadbeefcafebabe" }
+{ "level" : "error" , "msg" : "db connection failed" , "duration_ms" : 3038 , "request_id" : "7c9e6679-7425-40de-944b-e07fc1f90ae7" }
+{ "level" : "notice" , "msg" : "service started" , "port" : 8119 }
+{ "level" : "info" , "msg" : "user login" , "user_id" : 140 }
+{ "level" : "warn" , "msg" : "cache miss" , "key" : "0123456789abcdef" }
+{ "level" : "error" , "msg" : "db connection failed" , "duration_ms" : 3042 , "request_id" : "550e8400-e29b-41d4-a716-446655440000" }
+{ "level" : "notice" , "msg" : "service started" , "port" : 8123 }
+{ "level" : "info" , "msg" : "user login" , "user_id" : 144 }
+{ "level" : "warn" , "msg" : "cache miss" , "key" : "a1b2c3d4e5f6a7b8" }
+{ "level" : "error" , "msg" : "db connection failed" , "duration_ms" : 3046 , "request_id" : "6ba7b810-9dad-11d1-80b4-00c04fd430c8" }
+{ "level" : "notice" , "msg" : "service started" , "port" : 8127 }
+{ "level" : "info" , "msg" : "user login" , "user_id" : 148 }
+{ "level" : "warn" , "msg" : "cache miss" , "key" : "deadbeefcafebabe" }
+{ "level" : "error" , "msg" : "db connection failed" , "duration_ms" : 3050 , "request_id" : "7c9e6679-7425-40de-944b-e07fc1f90ae7" }
+{ "level" : "notice" , "msg" : "service started" , "port" : 8131 }
+{ "level" : "info" , "msg" : "user login" , "user_id" : 152 }
+{ "level" : "warn" , "msg" : "cache miss" , "key" : "0123456789abcdef" }
+{ "level" : "error" , "msg" : "db connection failed" , "duration_ms" : 3054 , "request_id" : "550e8400-e29b-41d4-a716-446655440000" }

@@ -1,8 +1,12 @@
 //! [`LogEvent`] — the fundamental analyzable unit (RFC-0000 §5.3), plus the canonical
 //! [`Severity`] scale and its [`Provenance`] (RFC-0017).
 
+use crate::attributes::Attributes;
 use crate::ids::Timestamp;
 use crate::ids::{EventId, Fingerprint, IndexTime, SourceOffset, StreamId, TemplateId};
+
+/// Maximum admitted raw line length in bytes.
+pub const MAX_RAW_LINE_BYTES: usize = 64 * 1024;
 
 /// The single canonical severity scale (RFC-0017 §5.2), ordered low → high.
 /// "unknown" is **not** a variant here — it is modeled as `Option::<Severity>::None`,
@@ -59,7 +63,7 @@ pub struct LogEvent {
     /// How `severity` was derived (RFC-0017).
     pub severity_source: Provenance,
     /// Derived key/value attributes (RFC-0017 §7).
-    pub attributes: Vec<(Box<str>, Box<str>)>,
+    pub attributes: Attributes,
     /// Inferred template (RFC-0003); `None` until classified.
     pub template_id: Option<TemplateId>,
     /// Structural fallback identity (RFC-0003); `None` until mined.
@@ -85,7 +89,7 @@ impl LogEvent {
             index_time: None,
             severity: None,
             severity_source: Provenance::Default,
-            attributes: Vec::new(),
+            attributes: Attributes::new(),
             template_id: None,
             fingerprint: None,
         }
