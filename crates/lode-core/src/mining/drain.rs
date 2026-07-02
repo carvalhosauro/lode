@@ -47,11 +47,11 @@ impl TemplateRegistry {
     }
 
     fn entry_mut(&mut self, id: TemplateId) -> &mut RegistryEntry {
-        &mut self.entries[id.0 as usize]
+        &mut self.entries[template_index(id)]
     }
 
     fn bucket_candidates(&self, key: u64) -> &[TemplateId] {
-        self.buckets.get(&key).map(Vec::as_slice).unwrap_or(&[])
+        self.buckets.get(&key).map_or(&[][..], Vec::as_slice)
     }
 
     fn push_bucket(&mut self, key: u64, id: TemplateId) {
@@ -93,12 +93,15 @@ impl DrainState {
         let mut best_sim = st;
 
         for &candidate_id in self.registry.bucket_candidates(key) {
-            let entry = &self.registry.entries[candidate_id.0 as usize];
+            let entry = &self.registry.entries[template_index(candidate_id)];
             let sim = sequence_similarity(&entry.tokens, &masked.tokens);
             if sim >= st {
                 let better = match best_id {
                     None => true,
-                    Some(current) => sim > best_sim || (sim == best_sim && candidate_id < current),
+                    Some(current) => {
+                        sim > best_sim
+                            || ((sim - best_sim).abs() < f64::EPSILON && candidate_id < current)
+                    }
                 };
                 if better {
                     best_sim = sim;
@@ -145,7 +148,7 @@ impl DrainState {
             id
         };
 
-        let entry = &self.registry.entries[template_id.0 as usize];
+        let entry = &self.registry.entries[template_index(template_id)];
         let pattern = entry.template.pattern.to_string();
         let fingerprint = Fingerprint::from_masked_tokens(&masked.tokens);
 
@@ -163,6 +166,11 @@ impl DrainState {
     }
 }
 
+#[allow(clippy::cast_possible_truncation)] // template ids are sequential and tiny
+fn template_index(id: TemplateId) -> usize {
+    id.0 as usize
+}
+
 fn routing_key(tokens: &[Token], depth: u8) -> u64 {
     let len = tokens.len();
     let pref_end = usize::from(depth).min(len);
@@ -178,6 +186,7 @@ fn routing_key(tokens: &[Token], depth: u8) -> u64 {
     h.finish()
 }
 
+#[allow(clippy::cast_precision_loss)] // token counts are far below f64 mantissa limits
 fn sequence_similarity(pattern: &[Token], masked: &[Token]) -> f64 {
     if pattern.len() != masked.len() {
         return 0.0;

@@ -7,7 +7,7 @@ use super::Token;
 pub fn pattern_to_string(tokens: &[Token]) -> String {
     tokens
         .iter()
-        .map(|t| t.as_str())
+        .map(Token::as_str)
         .collect::<Vec<_>>()
         .join(" ")
 }

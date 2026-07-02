@@ -64,7 +64,7 @@ fn mask_pri_ver(raw: &str, placeholders: &mut Vec<(Box<str>, Box<str>)>) -> Opti
         return None;
     }
     let pri_end = i + 1;
-    if pri_end >= raw.len() || !bytes[pri_end..].iter().all(|b| b.is_ascii_digit()) {
+    if pri_end >= raw.len() || !bytes[pri_end..].iter().all(u8::is_ascii_digit) {
         return None;
     }
     let pri = &raw[..pri_end];
@@ -93,13 +93,13 @@ fn mask_quoted_http(raw: &str, placeholders: &mut Vec<(Box<str>, Box<str>)>) -> 
     if path.is_empty() || !path.starts_with('/') {
         return None;
     }
-    if !method.bytes().all(|b| b.is_ascii_alphabetic()) {
+    if !method.chars().all(|c| c.is_ascii_alphabetic()) {
         return None;
     }
     let version = suffix
         .chars()
         .next()
-        .filter(|c| c.is_ascii_digit())?;
+        .filter(char::is_ascii_digit)?;
     record_capture(placeholders, MaskKind::Path, path);
     Some(format!(
         "\"{method} {} HTTP/1.{version}\"",
