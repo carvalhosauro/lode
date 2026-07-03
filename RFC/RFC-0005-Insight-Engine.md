@@ -382,14 +382,16 @@ These provide observability only and never alter the detection flow (RFC-0009 / 
 
 ---
 
-# 16. Determinism and Acceptance
+# 16. Quality and Acceptance
 
-Insight quality is **measured**, like mining (RFC-0003), and precision is the gate.
+Insight quality is **measured, not assumed**, against a labeled insight corpus. Precision is the primary correctness gate — the same discipline RFC-0003 §12 applies to mining — and the source of the engine's deterministic tests. Without a defined corpus and a defined notion of a *correct* insight, the precision gate would either block sign-off (nobody can measure it) or decay into a subjective judgment a weak engine passes; this section removes that ambiguity.
 
-- **Determinism** — given the same indexed events, baselines, parameters, and suppression state, the engine produces identical insights. No lookahead: an insight references only events at or before its detection window.
-- **Golden corpus** — standard-format logs (shared with RFC-0003) annotated with labeled ground-truth spikes, rare events, emergences, and regressions.
-- **Metric** — **precision** (surfaced insights that are true) is primary; recall is reported, not gated.
-- **Acceptance bar** — `precision ≥ 0.80` on the corpus under default parameters. False positives are the enemy; a change that raises recall while dropping precision below the bar does not ship.
+- **Insight corpus** — synthetic and real log windows carrying **injected, labeled anomalies**: a rate spike of template X at window `t`, a new template appearing at window `t′`, a known template gone rare, a sustained error-bearing regression. The ground-truth **label is the expected `(detector, window)` pair** — which detector should fire, and the window it should fire in. The corpus reuses RFC-0003's golden-corpus standard-format logs as its substrate, with the anomalies injected on top; the injection recipe is a versioned corpus artifact, never code.
+- **Metric — precision** — the fraction of surfaced insights that match a ground-truth label. **Precision is gated.** Recall (labeled anomalies the engine actually caught) is reported alongside as informative signal, never gated — consistent with the precision-over-recall principle (DEC-002): raising recall by surfacing more candidates must never drop precision below the bar.
+- **Acceptance bar** — `precision ≥ 0.80` **per detector** over the labeled corpus under default parameters, required before Phase 4 sign-off. False positives are the enemy (Section 2); a change that raises recall while dropping any detector below the bar does not ship.
+- **Determinism test** — the same window, in the same order, with the same baselines, parameters, and suppression state yields identical insights. This is the acceptance-side check of the determinism invariant (Section 4) and mirrors RFC-0003 DEC-009. No lookahead: an insight references only events at or before its detection window. Any non-determinism is a defect.
+
+The acceptance bar and the determinism test gate any change to a detector, the baseline model, or the precision pipeline.
 
 ---
 
@@ -462,9 +464,9 @@ v1 feedback is manual mute of `(type, subject)`, persisted and treated as an exp
 
 The engine never notifies; consumers surface insights. An insight references only events at or before its detection window.
 
-## DEC-010 — Precision Gated at ≥ 0.80
+## DEC-010 — Precision Gated at ≥ 0.80 per Detector
 
-Insight detection must reach `precision ≥ 0.80` on the golden corpus under default parameters before a change ships.
+Insight detection must reach `precision ≥ 0.80` **per detector** on the labeled insight corpus (Section 16) under default parameters — before a change ships and before Phase 4 sign-off. The ground-truth label is the expected `(detector, window)` pair; recall is reported alongside but never gated.
 
 ---
 
@@ -486,4 +488,6 @@ Insight detection must reach `precision ≥ 0.80` on the golden corpus under def
 | Precision Pipeline | The deterministic gate: warmup → gates → dedup → cooldown → suppression     |
 | Suppression     | The persisted user mute list of `(type, subject)`, a pipeline input           |
 | Confidence      | A normalized `[0.0, 1.0]` score ranking an insight's relevance                |
-| Precision       | Fraction of surfaced insights that are true; the acceptance metric            |
+| Insight corpus  | Labeled log windows with injected anomalies; ground truth is the expected `(detector, window)` pair |
+| Precision       | Fraction of surfaced insights that match a ground-truth label; the acceptance metric |
+| Recall          | Fraction of labeled anomalies the engine surfaced; reported, never gated      |
