@@ -458,7 +458,7 @@ Mining quality is **measured, not assumed**, against a golden corpus of standard
 
 - **Golden corpus** — labeled samples of standard formats: nginx access/error, Apache, syslog (RFC 5424), JSON lines, journald export, Postgres, Redis, and Linux kernel. Each sample ships with its ground-truth template set. Public datasets (e.g. Loghub) seed the corpus.
 - **Metric — Parsing Accuracy (PA)** — the fraction of messages assigned to the correct ground-truth template grouping (the standard log-parsing metric). Template-count delta is reported alongside.
-- **Acceptance bar** — `PA ≥ 0.90` per standard format under default parameters.
+- **Acceptance bar** — `PA ≥ 0.90` per standard format under that format's **effective parameters** (defaults plus any per-format overrides declared in the corpus manifest, per §13). Overrides used by the gate are part of the golden corpus definition and are themselves versioned.
 - **Determinism test** — re-running mining over the same corpus in the same order yields a bit-identical template set and identical assignments. Any non-determinism is a defect.
 
 The acceptance bar and the determinism test gate any change to the tokenizer, masking dictionary, or tree logic.
@@ -537,7 +537,7 @@ Same masked input, same order, same parameters → bit-identical templates and a
 
 ## DEC-010 — Quality is Gated at PA ≥ 0.90
 
-Mining must reach `PA ≥ 0.90` per standard format under default parameters before a change ships.
+Mining must reach `PA ≥ 0.90` per standard format under the format's effective parameters before a change ships. Effective parameters = defaults + declared per-format overrides; an override is a corpus artifact, never code.
 
 ---
 
