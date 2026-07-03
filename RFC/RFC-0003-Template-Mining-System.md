@@ -457,6 +457,8 @@ All parameters are fixed inputs to the determinism invariant: changing them chan
 Mining quality is **measured, not assumed**, against a golden corpus of standard log formats. This is the project's primary correctness gate and the source of its deterministic tests.
 
 - **Golden corpus** — labeled samples of standard formats: nginx access/error, Apache, syslog (RFC 5424), JSON lines, journald export, Postgres, Redis, and Linux kernel. Each sample ships with its ground-truth template set. Public datasets (e.g. Loghub) seed the corpus.
+  - **Phased coverage** — the corpus ships incrementally. The Phase 1 gate runs over `json-lines`, `nginx-access`, and `syslog-rfc5424`; the full corpus (all 8 formats) is required before Phase 5 sign-off. PA measured on the shipped subset is not a coverage claim over the unshipped formats.
+  - **Token-class coverage** — samples must exercise representative token classes, not just the common case: long decimals (≥ 8 digits), HTTP/2 request lines, and ISO-8601 timestamps with zone offset (`+00:00`) and microsecond precision. Every corpus expansion toward full coverage must add these classes.
 - **Metric — Parsing Accuracy (PA)** — the fraction of messages assigned to the correct ground-truth template grouping (the standard log-parsing metric). Template-count delta is reported alongside.
 - **Acceptance bar** — `PA ≥ 0.90` per standard format under that format's **effective parameters** (defaults plus any per-format overrides declared in the corpus manifest, per §13). Overrides used by the gate are part of the golden corpus definition and are themselves versioned.
 - **Determinism test** — re-running mining over the same corpus in the same order yields a bit-identical template set and identical assignments. Any non-determinism is a defect.
@@ -560,3 +562,12 @@ Mining must reach `PA ≥ 0.90` per standard format under the format's effective
 | Cold Template     | A template demoted under the memory bound, revivable in batch           |
 | Parsing Accuracy (PA) | Fraction of messages grouped as the ground-truth template           |
 | Golden Corpus     | Labeled standard-format samples used to gate mining quality             |
+
+---
+
+# 17. Changelog
+
+Amendments to this `Accepted` RFC are recorded here (see RFC/README.md § Status & amendments).
+
+- **2026-07-03** — §12 / DEC-010: the PA gate reads a format's **effective parameters** (defaults plus declared per-format overrides), not defaults alone (#7).
+- **2026-07-03** — §12: golden-corpus coverage declared **phased** — Phase 1 gate over `json-lines`, `nginx-access`, `syslog-rfc5424`; full 8-format corpus required before Phase 5 sign-off; samples must exercise representative token classes (long decimals, HTTP/2, ISO offsets) (#9).
