@@ -1,6 +1,6 @@
 # RFC-0000 — Domain Model
 
-**Status:** Draft
+**Status:** Accepted
 **Author:** carvalhosauro
 **Version:** 1.0
 

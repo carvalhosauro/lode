@@ -1,6 +1,6 @@
 # RFC-0003 — Template Mining System
 
-**Status:** Draft
+**Status:** Accepted
 **Author:** carvalhosauro
 **Version:** 1.1
 
