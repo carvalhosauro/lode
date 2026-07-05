@@ -17,10 +17,11 @@ const FORMAT_DEPTH_OVERRIDES: &[(&str, u8)] = &[("nginx-access", 5)];
 /// Resolve the mining params for `format_id`: defaults plus any registered override.
 fn params_for(format_id: &str) -> MiningParams {
     let mut params = MiningParams::default();
-    for &(id, depth) in FORMAT_DEPTH_OVERRIDES {
-        if id == format_id {
-            params.depth = depth;
-        }
+    if let Some(&(_, depth)) = FORMAT_DEPTH_OVERRIDES
+        .iter()
+        .find(|&&(id, _)| id == format_id)
+    {
+        params.depth = depth;
     }
     params
 }
