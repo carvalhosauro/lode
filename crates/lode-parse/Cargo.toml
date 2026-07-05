@@ -20,3 +20,9 @@ lode-core = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 toml = { workspace = true }
+
+# Reproducible mining benchmark over the golden corpus (task T1.4). Custom harness
+# (no criterion) to stay dependency-light and keep cargo-deny green; see benches/mining.rs.
+[[bench]]
+name = "mining"
+harness = false
