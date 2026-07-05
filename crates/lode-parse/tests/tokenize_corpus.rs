@@ -27,7 +27,8 @@ fn nginx_bracket_and_quoted_tokens() {
 
 #[test]
 fn syslog_pri_version_iso_hostport() {
-    let raw = "<134>1 2024-10-10T13:55:36.123Z host01 myapp - - - User login successful for user 100";
+    let raw =
+        "<134>1 2024-10-10T13:55:36.123Z host01 myapp - - - User login successful for user 100";
     let tokens: Vec<_> = tokenize(raw)
         .unwrap()
         .into_iter()
@@ -61,7 +62,10 @@ fn syslog_pri_version_iso_hostport() {
         .into_iter()
         .map(|t| t.as_str().to_string())
         .collect();
-    assert_eq!(hostport_tokens.last().map(String::as_str), Some("10.0.1.1:8001"));
+    assert_eq!(
+        hostport_tokens.last().map(String::as_str),
+        Some("10.0.1.1:8001")
+    );
 }
 
 #[test]

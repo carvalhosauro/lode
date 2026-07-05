@@ -69,7 +69,11 @@ fn mask_pri_ver(raw: &str, placeholders: &mut Vec<(Box<str>, Box<str>)>) -> Opti
     }
     let pri = &raw[..pri_end];
     record_capture(placeholders, MaskKind::Num, pri);
-    Some(format!("{}{}", MaskKind::Num.placeholder(), &raw[pri_end..]))
+    Some(format!(
+        "{}{}",
+        MaskKind::Num.placeholder(),
+        &raw[pri_end..]
+    ))
 }
 
 fn mask_host_port(raw: &str, placeholders: &mut Vec<(Box<str>, Box<str>)>) -> Option<String> {
@@ -89,22 +93,47 @@ fn mask_host_port(raw: &str, placeholders: &mut Vec<(Box<str>, Box<str>)>) -> Op
 fn mask_quoted_http(raw: &str, placeholders: &mut Vec<(Box<str>, Box<str>)>) -> Option<String> {
     let inner = strip_quotes(raw)?;
     let (method, rest) = inner.split_once(' ')?;
-    let (path, suffix) = rest.rsplit_once(" HTTP/1.")?;
+    if method.is_empty() || !method.bytes().all(|b| b.is_ascii_alphabetic()) {
+        return None;
+    }
+    // Match `" HTTP/"` and parse the full version (`major[.minor]`) so HTTP/2 and
+    // HTTP/3 are recognised (not just HTTP/1.x), and preserve anything after the
+    // version — masking must never delete request-line content.
+    let (path, after) = rest.rsplit_once(" HTTP/")?;
     if path.is_empty() || !path.starts_with('/') {
         return None;
     }
-    if !method.chars().all(|c| c.is_ascii_alphabetic()) {
-        return None;
-    }
-    let version = suffix
-        .chars()
-        .next()
-        .filter(char::is_ascii_digit)?;
+    let version_len = http_version_len(after)?;
+    let (version, trailing) = after.split_at(version_len);
     record_capture(placeholders, MaskKind::Path, path);
     Some(format!(
-        "\"{method} {} HTTP/1.{version}\"",
+        "\"{method} {} HTTP/{version}{trailing}\"",
         MaskKind::Path.placeholder()
     ))
+}
+
+/// Byte length of a leading HTTP version token (`major` or `major.minor`) in `s`,
+/// or `None` if `s` does not start with a version.
+fn http_version_len(s: &str) -> Option<usize> {
+    let b = s.as_bytes();
+    let mut i = 0;
+    while i < b.len() && b[i].is_ascii_digit() {
+        i += 1;
+    }
+    if i == 0 {
+        return None; // no major-version digit
+    }
+    if i < b.len() && b[i] == b'.' {
+        let minor_start = i + 1;
+        i = minor_start;
+        while i < b.len() && b[i].is_ascii_digit() {
+            i += 1;
+        }
+        if i == minor_start {
+            return None; // `.` not followed by a minor-version digit
+        }
+    }
+    Some(i)
 }
 
 fn mask_quoted_uuid_or_hex(
@@ -197,7 +226,13 @@ fn is_uuid(s: &str) -> bool {
 }
 
 fn is_hex(s: &str) -> bool {
-    s.len() >= 8 && s.bytes().all(|b| b.is_ascii_hexdigit())
+    // Require at least one `a-f`/`A-F`: `is_ascii_hexdigit` also accepts `0-9`, so a
+    // pure decimal of 8+ digits (epoch `1728568536`, byte count `12345678`) would
+    // otherwise match here and mask as `<HEX>` — but `Hex` precedes `Num` in
+    // `EVAL_ORDER`, so it would win and produce the wrong template.
+    s.len() >= 8
+        && s.bytes().all(|b| b.is_ascii_hexdigit())
+        && s.bytes().any(|b| b.is_ascii_alphabetic())
 }
 
 fn is_path(s: &str) -> bool {
@@ -249,9 +284,7 @@ fn is_host_port(s: &str) -> bool {
     let Some((ip, port)) = s.rsplit_once(':') else {
         return false;
     };
-    !port.is_empty()
-        && port.bytes().all(|b| b.is_ascii_digit())
-        && is_ip(ip)
+    !port.is_empty() && port.bytes().all(|b| b.is_ascii_digit()) && is_ip(ip)
 }
 
 fn is_url(_s: &str) -> bool {
@@ -286,5 +319,43 @@ mod tests {
         let tokens = vec![Token::new("<134>1")];
         let masked = mask(tokens);
         assert_eq!(masked.tokens[0].as_str(), "<NUM>1");
+    }
+
+    #[test]
+    fn long_decimal_masks_as_num_not_hex() {
+        // Epoch / byte-count fields (8+ digits) must be <NUM>, not <HEX>.
+        for decimal in ["1728568536", "12345678", "00000000"] {
+            let masked = mask(vec![Token::new(decimal)]);
+            assert_eq!(masked.tokens[0].as_str(), "<NUM>", "input: {decimal}");
+        }
+    }
+
+    #[test]
+    fn real_hex_still_masks_as_hex() {
+        for hex in ["deadbeef", "00ff1a2b", "DEADBEEF"] {
+            let masked = mask(vec![Token::new(hex)]);
+            assert_eq!(masked.tokens[0].as_str(), "<HEX>", "input: {hex}");
+        }
+    }
+
+    #[test]
+    fn http2_request_line_keeps_method_and_version() {
+        let masked = mask(vec![Token::new("\"GET /x HTTP/2\"")]);
+        assert_eq!(masked.tokens[0].as_str(), "\"GET <PATH> HTTP/2\"");
+    }
+
+    #[test]
+    fn http_mask_preserves_trailing_content() {
+        let masked = mask(vec![Token::new("\"GET /a/b HTTP/1.0 keepalive\"")]);
+        assert_eq!(
+            masked.tokens[0].as_str(),
+            "\"GET <PATH> HTTP/1.0 keepalive\""
+        );
+    }
+
+    #[test]
+    fn http11_request_line_unchanged() {
+        let masked = mask(vec![Token::new("\"GET /api/users/12 HTTP/1.1\"")]);
+        assert_eq!(masked.tokens[0].as_str(), "\"GET <PATH> HTTP/1.1\"");
     }
 }
