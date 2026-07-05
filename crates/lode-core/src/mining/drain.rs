@@ -25,6 +25,12 @@ struct RegistryEntry {
 
 #[derive(Debug)]
 struct TemplateRegistry {
+    /// Append-only: a template's [`TemplateId`] equals its physical index here, which
+    /// is what [`template_index`] relies on. RFC-0003 §6.4 merge ("the loser is
+    /// retired") and §6.6 / DEC-008 eviction ("the least valuable template is demoted
+    /// to cold") — both deferred to T6.1 — remove entries and break this invariant.
+    /// Migrate to a keyed store (`HashMap<TemplateId, RegistryEntry>` or a slot map)
+    /// before implementing either, or `template_index` will return the wrong entry.
     entries: Vec<RegistryEntry>,
     buckets: HashMap<u64, Vec<TemplateId>>,
 }
@@ -143,7 +149,17 @@ impl DrainState {
                 last_seen: IndexTime(1),
                 state: TemplateState::Emerging,
             };
-            self.registry.entries.push(RegistryEntry { template, tokens });
+            // Enforce the append-only invariant `TemplateId == physical index`
+            // (see `TemplateRegistry::entries`) so a future eviction/merge that
+            // violates it trips here in dev instead of silently mis-indexing.
+            debug_assert_eq!(
+                template_index(id),
+                self.registry.entries.len(),
+                "TemplateId must equal its physical index in the registry"
+            );
+            self.registry
+                .entries
+                .push(RegistryEntry { template, tokens });
             self.registry.push_bucket(key, id);
             id
         };
@@ -159,10 +175,18 @@ impl DrainState {
         }
     }
 
-    fn maybe_evict_stub(&self) {
-        if self.registry.len() > self.params.max_templates as usize {
-            // T6.1: eviction deferred; golden corpus never hits `max_templates`.
-        }
+    /// Eviction hook (RFC-0003 §6.6 / DEC-008 "memory bounded by construction").
+    ///
+    /// Deferred to T6.1: the golden corpus never reaches `max_templates`, so this is
+    /// a no-op today. It takes `&mut self` so the real implementation needs no
+    /// call-site change, and the `debug_assert!` makes the unbounded-growth debt loud
+    /// in dev — high-cardinality streams would otherwise grow the registry without limit.
+    fn maybe_evict_stub(&mut self) {
+        debug_assert!(
+            self.registry.len() <= self.params.max_templates as usize,
+            "template registry reached max_templates ({}); eviction is unimplemented (T6.1)",
+            self.params.max_templates
+        );
     }
 }
 
@@ -270,16 +294,8 @@ mod tests {
 
     #[test]
     fn wildcard_matches_any_token_in_similarity() {
-        let pattern = vec![
-            Token::new("GET"),
-            Token::new("<*>"),
-            Token::new("<NUM>"),
-        ];
-        let masked = vec![
-            Token::new("GET"),
-            Token::new("<PATH>"),
-            Token::new("<NUM>"),
-        ];
+        let pattern = vec![Token::new("GET"), Token::new("<*>"), Token::new("<NUM>")];
+        let masked = vec![Token::new("GET"), Token::new("<PATH>"), Token::new("<NUM>")];
         assert!((sequence_similarity(&pattern, &masked) - 1.0).abs() < f64::EPSILON);
     }
 
@@ -295,7 +311,10 @@ mod tests {
         let result = state.process(&b);
         let expected = Fingerprint::from_masked_tokens(&b.tokens);
         assert_eq!(result.fingerprint, expected);
-        assert_ne!(result.fingerprint, Fingerprint::from_masked_tokens(&a.tokens));
+        assert_ne!(
+            result.fingerprint,
+            Fingerprint::from_masked_tokens(&a.tokens)
+        );
     }
 
     #[test]
