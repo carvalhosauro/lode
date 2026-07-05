@@ -1,4 +1,4 @@
-use lode_core::{Token, MAX_RAW_LINE_BYTES};
+use lode_core::{MAX_RAW_LINE_BYTES, Token};
 
 use crate::error::ParseError;
 
@@ -46,7 +46,10 @@ fn tokenize_json(raw: &str) -> Vec<Token> {
                 i += 1;
             }
             b'"' => {
-                let end = scan_quoted(raw, i).expect("unclosed quote in test corpus");
+                // Unterminated quote degrades to a literal run to end-of-line
+                // (RFC-0003 §3.2 favours degraded parsing over panics); T3.2 may
+                // instead surface `ParseError::Malformed`.
+                let end = scan_quoted(raw, i).unwrap_or(raw.len());
                 tokens.push(Token::new(&raw[i..end]));
                 i = end;
             }
@@ -71,8 +74,10 @@ fn tokenize_generic(raw: &str) -> Vec<Token> {
         }
 
         let end = match b {
-            b'[' => scan_bracketed(raw, i).expect("unclosed bracket in test corpus"),
-            b'"' => scan_quoted(raw, i).expect("unclosed quote in test corpus"),
+            // Unterminated bracket/quote degrades to a literal run to end-of-line
+            // instead of panicking on real-world logs (accents, emoji, truncation).
+            b'[' => scan_bracketed(raw, i).unwrap_or(raw.len()),
+            b'"' => scan_quoted(raw, i).unwrap_or(raw.len()),
             b'<' => scan_pri_version(raw, i).unwrap_or_else(|| scan_default_run(raw, i)),
             _ => {
                 if let Some(end) = scan_iso_timestamp(raw, i) {
@@ -139,11 +144,14 @@ fn scan_pri_version(raw: &str, start: usize) -> Option<usize> {
 
 fn scan_iso_timestamp(raw: &str, start: usize) -> Option<usize> {
     const LEN: usize = 24;
-    if start + LEN > raw.len() {
+    let bytes = raw.as_bytes();
+    if start + LEN > bytes.len() {
         return None;
     }
-    let slice = &raw[start..start + LEN];
-    let b = slice.as_bytes();
+    // Slice bytes, not `&str`: a byte window may fall inside a multibyte char
+    // (e.g. `…€`), and `&raw[start..start + LEN]` would panic on that boundary.
+    // The ASCII-only checks below reject any non-ASCII window anyway.
+    let b = &bytes[start..start + LEN];
     if !is_digit_at(b, 0)
         || !is_digit_at(b, 1)
         || !is_digit_at(b, 2)
@@ -288,5 +296,39 @@ mod tests {
                 max: MAX_RAW_LINE_BYTES,
             })
         );
+    }
+
+    #[test]
+    fn multibyte_char_at_iso_window_boundary_does_not_panic() {
+        // 23 ASCII bytes + `€` (bytes 23..26): the 24-byte ISO window ends inside
+        // `€`; a `&str` slice there would panic. Reachable via the public API.
+        let raw = format!("{}€", "a".repeat(23));
+        let tokens = tokenize(&raw).expect("tokenizes a multibyte line without panicking");
+        assert_eq!(tokens.len(), 1);
+        assert_eq!(tokens[0].as_str(), raw);
+    }
+
+    #[test]
+    fn emoji_line_does_not_panic() {
+        let tokens = tokenize("boot 🚀 done in 12ms").expect("no panic on emoji");
+        assert!(tokens.iter().any(|t| t.as_str().contains('🚀')));
+    }
+
+    #[test]
+    fn unterminated_bracket_degrades_to_line_end() {
+        let tokens = tokenize("[unterminated").expect("no panic on unterminated bracket");
+        assert_eq!(tokens.last().unwrap().as_str(), "[unterminated");
+    }
+
+    #[test]
+    fn unterminated_quote_degrades_to_line_end() {
+        let tokens = tokenize("msg \"no closing quote").expect("no panic on unterminated quote");
+        assert_eq!(tokens.last().unwrap().as_str(), "\"no closing quote");
+    }
+
+    #[test]
+    fn unterminated_quote_in_json_degrades() {
+        let tokens = tokenize("{\"k\":\"unterminated").expect("no panic in json fast-path");
+        assert!(tokens.last().unwrap().as_str().contains("unterminated"));
     }
 }
