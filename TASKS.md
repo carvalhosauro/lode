@@ -15,10 +15,10 @@ Each task: crate · RFC · gate. 🏁 = non-return milestone.
 
 ## Phase 1 — Mining engine (differentiator + risk #1)
 
-- [ ] **T1.1** Tokenizer + char-class masking dictionary (NUM/IP/UUID/HEX/PATH/TS) · `lode-parse` · RFC-0003 §6.1
-- [ ] **T1.2** Drain parse tree + template registry (fixed-depth, similarity, widen-only, bounded, deterministic) · `lode-core` · RFC-0003
-- [ ] **T1.3** Fingerprint + `template_id` resolution · `lode-core`
-- [ ] 🏁 **T1.4 GATE: PA ≥ 0.90 + determinism on the golden corpus** (+ criterion throughput)
+- [x] **T1.1** Tokenizer + char-class masking dictionary (NUM/IP/UUID/HEX/PATH/TS) · `lode-parse` · RFC-0003 §6.1
+- [x] **T1.2** Drain parse tree + template registry (fixed-depth, similarity, widen-only, bounded, deterministic) · `lode-core` · RFC-0003
+- [x] **T1.3** Fingerprint + `template_id` resolution · `lode-core`
+- [x] 🏁 **T1.4 GATE: PA ≥ 0.90 + determinism on the golden corpus** — met (PA = 1.00 on all 3 shipped formats). Reproducible bench `lode-parse/benches/mining.rs`: throughput (machine-relative) + a bit-reproducible determinism/quality fingerprint (`template_set_hash` + PA + count deltas) committed as `benches/mining.golden.json`. Run `cargo bench --bench mining` (report), `-- --check` (fail on drift), `-- --update-golden` (rebaseline).
 
 ## Phase 2 — Ingest + enrich + storage
 
