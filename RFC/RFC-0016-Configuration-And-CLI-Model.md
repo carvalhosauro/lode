@@ -133,6 +133,7 @@ class StreamConfig {
   source_type
   mode
   metadata
+  mining
 }
 
 class ConfigSource {
@@ -185,6 +186,8 @@ Properties:
 
 The conceptual format family is a structured, human-editable document (YAML/TOML class). This RFC fixes the schema, the validation contract, and the load outcome; it does not fix surface syntax.
 
+Mining tunables are configuration in exactly this sense. Any per-stream `mining` overrides (§5.3) of the RFC-0003 tunables are declarative values, validated as part of the whole configuration and never interpreted as code; per-format tuning that today leaks into the engine belongs here as data, not as a hardcoded branch.
+
 ## 5.3 StreamConfig
 
 One declared origin of events, mapped onto the RFC-0000 `LogStream` shape.
@@ -195,8 +198,11 @@ Fields:
 - `source_type` ∈ {file, docker, stdin, journald}
 - `mode` ∈ {batch, tail, hybrid}
 - `metadata`
+- `mining` — optional per-stream overrides of the RFC-0003 mining tunables (RFC-0003 §11, §13): `depth` (`d`), `similarity_threshold` (`st`), `max_templates` (`T_max`), and `stabilization_threshold` (`N`, occurrences before `emerging` → `stable`). Every field is optional; an absent field falls back to its RFC-0003 default. The block carries data, never code.
 
 A StreamConfig declares a stream; it performs no parsing and holds no business rules. It is the configuration projection of a LogStream.
+
+The `mining` block is resolved and validated as part of the EffectiveConfig, on the same precedence chain as every other value (defaults < file < env < flags, §6). This gives per-stream tuning promised by RFC-0003 §13 a declarative home: a combined-log format that needs `depth > 4` (RFC-0003 §6.2) is declared in configuration, not encoded as a per-format branch in the engine.
 
 ## 5.4 ConfigSource
 
