@@ -1,8 +1,12 @@
 //! Template-mining domain types (RFC-0003). Algorithms land in T1.
 
+mod drain;
 mod fingerprint;
+mod pattern;
 
+pub use drain::{DrainState, ProcessResult};
 pub use fingerprint::template_set_hash;
+pub use pattern::pattern_to_string;
 
 use crate::hash::Fnv1a64;
 

@@ -1,0 +1,9 @@
+{
+  "template_set_hash": "0x315a2584bdc1104e",
+  "global_pa": 1.000000,
+  "per_format": [
+    { "id": "json-lines", "pa": 1.000000, "template_count_delta": 0 },
+    { "id": "nginx-access", "pa": 1.000000, "template_count_delta": 0 },
+    { "id": "syslog-rfc5424", "pa": 1.000000, "template_count_delta": 0 }
+  ]
+}

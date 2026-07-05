@@ -2,6 +2,9 @@
 
 /// Mines a single raw log line into its template pattern string.
 pub trait CorpusMiner {
+    /// Reset per-format state (new parse tree, format-specific params). Default: no-op.
+    fn begin_format(&mut self, _format_id: &str) {}
+
     fn mine_line(&mut self, raw: &str) -> String;
 }
 
