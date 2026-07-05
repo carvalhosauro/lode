@@ -20,7 +20,8 @@ fn mask_only_pa_nginx_sample() {
 
 #[test]
 fn mask_only_pa_syslog_pri_and_hostport() {
-    let login = "<134>1 2024-10-10T13:55:36.123Z host01 myapp - - - User login successful for user 100";
+    let login =
+        "<134>1 2024-10-10T13:55:36.123Z host01 myapp - - - User login successful for user 100";
     assert_eq!(
         mask_pattern(login),
         "<NUM>1 <TS> host01 myapp - - - User login successful for user <NUM>"
@@ -60,10 +61,7 @@ fn mask_only_pa_full_corpus() {
         for (idx, raw) in format.lines.iter().enumerate() {
             let line_no = idx + 1;
             let label = format.labels.get(&line_no).expect("label");
-            let expected = format
-                .templates
-                .get(&label.template_gid)
-                .expect("template");
+            let expected = format.templates.get(&label.template_gid).expect("template");
             let mined = mask_pattern(raw);
             total += 1;
             if patterns_match(expected, &mined) {
